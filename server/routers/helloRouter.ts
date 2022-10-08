@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { t } from "./t";
+import { t } from "../t";
 
 export const helloRouter = t.router({
   world: t.procedure

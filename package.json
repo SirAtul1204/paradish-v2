@@ -21,7 +21,7 @@
     "@trpc/server": "^10.0.0-proxy-beta.15",
     "bcrypt": "^5.1.0",
     "cookies-next": "^2.1.1",
-    "jsonwebtoken": "^8.5.1",
+    "jose": "^4.10.0",
     "next": "12.3.1",
     "prisma": "^4.4.0",
     "react": "18.2.0",

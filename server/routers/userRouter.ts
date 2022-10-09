@@ -1,7 +1,7 @@
 import { t } from "../t";
 import { z } from "zod";
 import * as bcrypt from "bcrypt";
-import * as jwt from "jsonwebtoken";
+import * as jose from "jose";
 import { TRPCError } from "@trpc/server";
 import { prisma } from "../prisma";
 import { setCookie } from "cookies-next";
@@ -35,13 +35,12 @@ export const userRouter = t.router({
           message: "Email or password is incorrect",
         });
 
-      const token = jwt.sign(
-        { id: user.id, role: user.role },
-        process.env.JWT_SECRET!,
-        {
-          expiresIn: "1d",
-        }
-      );
+      const token = await new jose.SignJWT({
+        id: user.id,
+        role: user.role,
+      })
+        .setProtectedHeader({ alg: "HS256" })
+        .sign(process.env.JWT_SECRET! as unknown as jose.KeyLike);
 
       setCookie("user-token", token, {
         req: ctx.req,

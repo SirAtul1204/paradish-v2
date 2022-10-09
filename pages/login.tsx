@@ -37,7 +37,7 @@ const Login = () => {
         top: "50%",
         left: "50%",
         transform: "translate(-50%, -50%)",
-        width: "100%",
+        width: "30%",
       }}
     >
       <Grid
@@ -46,7 +46,7 @@ const Login = () => {
         alignItems="stretch"
         direction="column"
         spacing={3}
-        lg={4}
+        // lg={4}
       >
         <Grid item alignSelf="center">
           <Typography variant="h6" color="secondary">

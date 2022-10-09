@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import * as jose from "jose";
 import type { NextRequest } from "next/server";
+import { getBaseUrl } from "./utils/trpc";
 const PUBLIC_FILE = /\.(.*)$/;
 
 const publicRoutes = ["/", "/login"];
@@ -23,11 +24,12 @@ export async function middleware(request: NextRequest) {
 
     const { payload } = await jose.jwtVerify(
       userToken!,
-      process.env.JWT_SECRET! as unknown as jose.KeyLike
+      new TextEncoder().encode(process.env.JWT_SECRET!)
     );
+    console.log({ payload });
     return NextResponse.next();
   } catch (e) {
-    return NextResponse.redirect("/login");
+    return NextResponse.redirect(getBaseUrl() + "/login");
   }
 }
 

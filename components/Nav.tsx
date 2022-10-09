@@ -20,7 +20,12 @@ const Nav = () => {
           <Grid item>
             <Grid container spacing={2}>
               <Grid item>
-                <Button variant="contained">Dashboard</Button>
+                <Button
+                  variant="contained"
+                  onClick={() => router.push("/dashboard")}
+                >
+                  Dashboard
+                </Button>
               </Grid>
               <Grid item>
                 <Button variant="contained">Sign Out</Button>

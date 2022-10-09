@@ -5,6 +5,8 @@ import * as jose from "jose";
 import { TRPCError } from "@trpc/server";
 import { prisma } from "../prisma";
 import { setCookie } from "cookies-next";
+import { KeyObject } from "crypto";
+import { secretKey } from "../../utils/key";
 
 export const userRouter = t.router({
   login: t.procedure
@@ -40,7 +42,7 @@ export const userRouter = t.router({
         role: user.role,
       })
         .setProtectedHeader({ alg: "HS256" })
-        .sign(process.env.JWT_SECRET! as unknown as jose.KeyLike);
+        .sign(secretKey);
 
       setCookie("user-token", token, {
         req: ctx.req,

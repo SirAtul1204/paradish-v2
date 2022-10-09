@@ -15,7 +15,7 @@ const MyAlert = () => {
   };
 
   return (
-    <Snackbar open={isOpen} autoHideDuration={6000} onClose={handleClose}>
+    <Snackbar open={isOpen} autoHideDuration={3000} onClose={handleClose}>
       <Alert onClose={handleClose} severity={type} sx={{ width: "100%" }}>
         {message}
       </Alert>

@@ -6,7 +6,7 @@ const initialState: {
   message: string;
   type: AlertColor;
 } = {
-  isOpen: true,
+  isOpen: false,
   message: "message",
   type: "success",
 };
@@ -31,8 +31,6 @@ const alertSlice = createSlice({
     },
     closeAlert: (state) => {
       state.isOpen = false;
-      state.message = "";
-      state.type = "success";
     },
   },
 });

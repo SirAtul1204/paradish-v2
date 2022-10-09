@@ -1,8 +1,11 @@
 import { AppBar, Button, Grid } from "@mui/material";
 import { Container } from "@mui/system";
+import { useRouter } from "next/router";
 import MaterialImage from "./MaterialImage";
 
 const Nav = () => {
+  const router = useRouter();
+
   return (
     <AppBar sx={{ paddingY: 2 }}>
       <Container>
@@ -15,7 +18,22 @@ const Nav = () => {
             />
           </Grid>
           <Grid item>
-            <Button variant="contained">Dashboard</Button>
+            <Grid container spacing={2}>
+              <Grid item>
+                <Button variant="contained">Dashboard</Button>
+              </Grid>
+              <Grid item>
+                <Button variant="contained">Sign Out</Button>
+              </Grid>
+              <Grid item>
+                <Button
+                  variant="contained"
+                  onClick={(e) => router.push("/login")}
+                >
+                  Login
+                </Button>
+              </Grid>
+            </Grid>
           </Grid>
         </Grid>
       </Container>

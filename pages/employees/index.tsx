@@ -8,9 +8,13 @@ import {
   MenuItem,
   InputLabel,
   FormControl,
+  Button,
 } from "@mui/material";
-import { DataGrid, GridLinkOperator } from "@mui/x-data-grid";
+import { DataGrid } from "@mui/x-data-grid";
+import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
+import Spinner from "../../components/Spinner";
+import { trpc } from "../../utils/trpc";
 
 export type TCols =
   | "id"
@@ -28,13 +32,25 @@ const Employees = () => {
   const [filter, setFilter] = useState<TCols>(null);
   const [search, setSearch] = useState("");
 
+  const router = useRouter();
+
+  const { data, isLoading } = trpc.user.getAll.useQuery(undefined, {
+    onSuccess: (data) => {
+      console.log(data);
+    },
+  });
+
   const columns = [
-    { field: "id", headerName: "ID", flex: 1 },
-    { field: "name", headerName: "Name", flex: 3 },
+    { field: "id", headerName: "ID", width: 80 },
+    {
+      field: "name",
+      headerName: "Name",
+      width: 120,
+    },
     {
       field: "photo",
       headerName: "Photo",
-      flex: 3,
+      width: 120,
       renderCell: (params: any) => (
         <Avatar
           src={params.value}
@@ -43,56 +59,62 @@ const Employees = () => {
         />
       ),
     },
-    { field: "email", headerName: "Email", flex: 3 },
-    { field: "role", headerName: "Role", flex: 2 },
-    { field: "phone", headerName: "Phone", flex: 3 },
-    { field: "aadharNumber", headerName: "Aadhar Number", flex: 3 },
-    { field: "panNumber", headerName: "Pan Number", flex: 3 },
-    { field: "address", headerName: "Address", flex: 4 },
+    {
+      field: "email",
+      headerName: "Email",
+      width: 250,
+    },
+    { field: "role", headerName: "Role", width: 80 },
+    { field: "phone", headerName: "Phone", width: 150 },
+    {
+      field: "aadharNumber",
+      headerName: "Aadhar Number",
+      width: 300,
+      renderCell: (params: any) => {
+        if (!params.value) return null;
+        const vals = params.value.split(",");
+
+        return (
+          <Box>
+            {vals.map((val: string) => (
+              <Typography key={val}>{val}</Typography>
+            ))}
+          </Box>
+        );
+      },
+    },
+    { field: "panNumber", headerName: "Pan Number", width: 200 },
+    { field: "address", headerName: "Address", width: 300 },
   ];
 
-  const rows = [
-    {
-      id: 1,
-      name: "John Doe",
-      photo: "https://picsum.photos/200",
-      email: "loremisum",
-      role: "Admin",
-      phone: "1234567890",
-      address: "Lorem Ipsum",
-      aadharNumber: "123456789012",
-      panNumber: "1234567890",
-    },
-    {
-      id: 2,
-      name: "Jane Doe",
-      photo: "https://picsum.photos/200",
-      email: "loremisum",
-      role: "Admin",
-      phone: "1234567890",
-      address: "Lorem Ipsum",
-      aadharNumber: "123456789012",
-      panNumber: "1234567890",
-    },
-    {
-      id: 3,
-      name: "Jane Doe",
-      photo: "https://picsum.photos/200",
-      email: "loremisum",
-      role: "Admin",
-      phone: "1234567890",
-      address: "Lorem Ipsum",
-      aadharNumber: "123456789012",
-      panNumber: "1234567890",
-    },
-  ];
-
-  useEffect(() => {
-    console.log(filter);
-  });
+  if (isLoading) return <Spinner loadingText="Loading Employees" />;
 
   return (
     <Grid container direction="column" spacing={2}>
+      <Grid
+        item
+        container
+        spacing={2}
+        alignItems="center"
+        justifyContent="center"
+      >
+        <Grid item>
+          <Typography variant="h6" color="success" textAlign="center">
+            Add Employee
+          </Typography>
+        </Grid>
+        <Grid item>&rarr;</Grid>
+        <Grid item>
+          <Button
+            variant="contained"
+            color="success"
+            sx={{ fontWeight: 700 }}
+            onClick={(e) => router.push("/employees/add")}
+          >
+            Add
+          </Button>
+        </Grid>
+      </Grid>
       <Grid item>
         <Typography variant="h5" textAlign="center" color="secondary">
           Employee Details
@@ -139,10 +161,10 @@ const Employees = () => {
         </Grid>
       </Grid>
       <Grid item>
-        <Box sx={{ width: "100%" }}>
+        <Box>
           <DataGrid
             columns={columns}
-            rows={rows}
+            rows={data}
             rowHeight={200}
             autoHeight
             showColumnRightBorder
@@ -159,6 +181,7 @@ const Employees = () => {
             }}
             checkboxSelection
             disableSelectionOnClick
+            scrollbarSize={1}
           />
         </Box>
       </Grid>

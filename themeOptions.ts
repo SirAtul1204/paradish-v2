@@ -1,5 +1,6 @@
 import { ThemeOptions, Theme } from "@mui/material/styles";
 import { createTheme } from "@mui/material";
+import type {} from "@mui/x-date-pickers/themeAugmentation";
 
 export const themeOptions: ThemeOptions = {
   palette: {

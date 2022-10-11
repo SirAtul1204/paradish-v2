@@ -26,7 +26,7 @@ export async function middleware(request: NextRequest) {
       userToken!,
       new TextEncoder().encode(process.env.JWT_SECRET!)
     );
-    console.log({ payload });
+    // console.log({ payload });
     return NextResponse.next();
   } catch (e) {
     return NextResponse.redirect(getBaseUrl() + "/login");

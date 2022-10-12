@@ -313,4 +313,143 @@ export const userRouter = t.router({
         message: "Password updated successfully",
       };
     }),
+  getById: t.procedure
+    .input(
+      z.object({
+        id: z.string(),
+      })
+    )
+    .query(async ({ input, ctx }) => {
+      const payload = await verifyCookie(ctx);
+      const requestor = await getRequestor(payload);
+      if (!(requestor.role === Role.OWNER || requestor.role === Role.MANAGER))
+        throw new TRPCError({
+          code: "FORBIDDEN",
+          message: "You are not authorized to access this resource.",
+        });
+
+      const user = await prisma.user.findUnique({
+        where: {
+          id: input.id,
+        },
+      });
+
+      if (!user)
+        throw new TRPCError({
+          code: "NOT_FOUND",
+          message: "User not found",
+        });
+
+      if (user.restaurantId !== requestor.restaurantId)
+        throw new TRPCError({
+          code: "FORBIDDEN",
+          message: "You are not authorized to access this resource.",
+        });
+
+      return user;
+    }),
+  updateUser: t.procedure
+    .input(
+      z.object({
+        id: z.string(),
+        name: z.string(),
+        role: z.enum([Role.OWNER, Role.MANAGER, Role.CHEF, Role.WAITER]),
+        address: z.string(),
+        aadharNumber: z.string(),
+        panNumber: z.string(),
+        extension: z.string().optional(),
+        phone: z.string(),
+        dob: z.string(),
+        doj: z.string(),
+        salary: z.number(),
+      })
+    )
+    .mutation(async ({ input, ctx }) => {
+      const payload = await verifyCookie(ctx);
+      const requestor = await getRequestor(payload);
+      if (!(requestor.role === Role.OWNER || requestor.role === Role.MANAGER))
+        throw new TRPCError({
+          code: "FORBIDDEN",
+          message: "You are not authorized to access this resource.",
+        });
+
+      const user = await prisma.user.findUnique({
+        where: {
+          id: input.id,
+        },
+      });
+
+      if (!user)
+        throw new TRPCError({
+          code: "NOT_FOUND",
+          message: "User not found",
+        });
+
+      if (user.restaurantId !== requestor.restaurantId)
+        throw new TRPCError({
+          code: "FORBIDDEN",
+          message: "You are not authorized to access this resource.",
+        });
+
+      if (user.role === Role.OWNER && input.role !== Role.OWNER)
+        throw new TRPCError({
+          code: "FORBIDDEN",
+          message: "You are not authorized to change the role of the owner.",
+        });
+
+      if (requestor.role === Role.MANAGER && input.role === Role.OWNER)
+        throw new TRPCError({
+          code: "FORBIDDEN",
+          message: "You are not authorized to promote anyone to owner",
+        });
+
+      if (input.extension) {
+        await prisma.user.update({
+          where: {
+            id: input.id,
+          },
+          data: {
+            name: input.name,
+            role: input.role,
+            address: input.address,
+            aadharNumber: input.aadharNumber,
+            panNumber: input.panNumber,
+            photo: `https://${process.env.AWS_S3_BUCKET_NAME!}.s3.${process.env
+              .AWS_S3_REGION!}.amazonaws.com/profile_pictures/${input.id}.${
+              input.extension
+            }`,
+            phone: input.phone,
+            dob: input.dob,
+            doj: input.doj,
+            salary: input.salary,
+          },
+        });
+
+        return {
+          message: "User updated successfully",
+          signedUrl: await getSignedUrlForProfilePic(input.id, input.extension),
+        };
+      } else {
+        await prisma.user.update({
+          where: {
+            id: input.id,
+          },
+          data: {
+            name: input.name,
+            role: input.role,
+            address: input.address,
+            aadharNumber: input.aadharNumber,
+            panNumber: input.panNumber,
+            phone: input.phone,
+            dob: input.dob,
+            doj: input.doj,
+            salary: input.salary,
+          },
+        });
+
+        return {
+          message: "User updated successfully",
+        };
+      }
+    }),
 });

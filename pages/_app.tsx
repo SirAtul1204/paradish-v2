@@ -9,6 +9,7 @@ import store from "../redux/store";
 import MyAlert from "../components/MyAlert";
 import { AdapterLuxon } from "@mui/x-date-pickers/AdapterLuxon";
 import { LocalizationProvider } from "@mui/x-date-pickers";
+import "../styles/global.css";
 
 function MyApp({ Component, pageProps }: AppProps) {
   return (

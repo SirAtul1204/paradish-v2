@@ -12,6 +12,7 @@ import {
 } from "@mui/material";
 import { DataGrid } from "@mui/x-data-grid";
 import { Role } from "@prisma/client";
+import { DateTime } from "luxon";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
@@ -71,6 +72,37 @@ const Employees = () => {
       field: "aadharNumber",
       headerName: "Aadhar Number",
       width: 300,
+    },
+    { field: "salary", headerName: "Salary", width: 150 },
+    {
+      field: "dob",
+      headerName: "Date of Birth",
+      width: 150,
+      renderCell: (params: any) => {
+        const dateString = DateTime.fromISO(params.value).toFormat(
+          "dd/MM/yyyy"
+        );
+        if (dateString === "Invalid DateTime") return "";
+        return dateString;
+      },
+    },
+    {
+      field: "doj",
+      headerName: "Date of Joining",
+      width: 150,
+      renderCell: (params: any) => {
+        const dateString = DateTime.fromISO(params.value).toFormat(
+          "dd/MM/yyyy"
+        );
+        if (dateString === "Invalid DateTime") return "";
+        return dateString;
+      },
+    },
+    { field: "panNumber", headerName: "Pan Number", width: 200 },
+    {
+      field: "address",
+      headerName: "Address",
+      width: 300,
       renderCell: (params: any) => {
         if (!params.value) return null;
         const vals = params.value.split(",");
@@ -84,8 +116,6 @@ const Employees = () => {
         );
       },
     },
-    { field: "panNumber", headerName: "Pan Number", width: 200 },
-    { field: "address", headerName: "Address", width: 300 },
   ];
 
   const deleteMutation = trpc.user.deleteUser.useMutation({

@@ -12,6 +12,9 @@ const Nav = () => {
     onSuccess: () => {
       router.push("/login");
     },
+    onError: (error) => {
+      console.log(error);
+    },
   });
 
   const handleSignOut = () => {

@@ -6,11 +6,20 @@ interface MaterialImageProps {
   src: string;
   width: number;
   height: number;
+  onClick?: () => void;
 }
 
-const MaterialImage: FC<MaterialImageProps> = ({ src, width, height }) => {
+const MaterialImage: FC<MaterialImageProps> = ({
+  src,
+  width,
+  height,
+  onClick,
+}) => {
   return (
-    <Box sx={{ position: "relative", width: width, height: height }}>
+    <Box
+      sx={{ position: "relative", width: width, height: height }}
+      onClick={onClick}
+    >
       <Image
         src={src}
         layout="fill"

@@ -11,9 +11,12 @@ import {
   Button,
 } from "@mui/material";
 import { DataGrid } from "@mui/x-data-grid";
+import { Role } from "@prisma/client";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
+import { useDispatch } from "react-redux";
 import Spinner from "../../components/Spinner";
+import { openAlert } from "../../redux/alertReducer";
 import { trpc } from "../../utils/trpc";
 
 export type TCols =
@@ -31,14 +34,12 @@ export type TCols =
 const Employees = () => {
   const [filter, setFilter] = useState<TCols>(null);
   const [search, setSearch] = useState("");
+  const [selection, setSelection] = useState<any>([]);
 
   const router = useRouter();
+  const dispatch = useDispatch();
 
-  const { data, isLoading } = trpc.user.getAll.useQuery(undefined, {
-    onSuccess: (data) => {
-      console.log(data);
-    },
-  });
+  const { data, isLoading, refetch } = trpc.user.getAll.useQuery();
 
   const columns = [
     { field: "id", headerName: "ID", width: 80 },
@@ -87,7 +88,28 @@ const Employees = () => {
     { field: "address", headerName: "Address", width: 300 },
   ];
 
+  const deleteMutation = trpc.user.deleteUser.useMutation({
+    onSuccess: (data) => {
+      dispatch(openAlert({ type: "success", message: data.message }));
+      refetch();
+    },
+    onError: (error) => {
+      dispatch(openAlert({ type: "error", message: error.message }));
+    },
+  });
+
+  const handleDelete = () => {
+    deleteMutation.mutate({ ids: selection });
+  };
+
+  const handleEdit = () => {
+    router.push(`/employees/edit/${selection[0]}`);
+  };
+
   if (isLoading) return <Spinner loadingText="Loading Employees" />;
+
+  if (deleteMutation.isLoading)
+    return <Spinner loadingText="Deleting Employees" />;
 
   return (
     <Grid container direction="column" spacing={2}>
@@ -119,6 +141,34 @@ const Employees = () => {
         <Typography variant="h5" textAlign="center" color="secondary">
           Employee Details
         </Typography>
+      </Grid>
+      <Grid
+        item
+        container
+        spacing={2}
+        justifyContent="center"
+        alignItems="center"
+      >
+        <Grid item>
+          <Button
+            variant="contained"
+            color="warning"
+            onClick={handleEdit}
+            disabled={selection.length === 1 ? false : true}
+          >
+            Edit
+          </Button>
+        </Grid>
+        <Grid item>
+          <Button
+            variant="contained"
+            color="error"
+            onClick={handleDelete}
+            disabled={selection.length >= 1 ? false : true}
+          >
+            Delete
+          </Button>
+        </Grid>
       </Grid>
       <Grid
         item
@@ -182,6 +232,9 @@ const Employees = () => {
             checkboxSelection
             disableSelectionOnClick
             scrollbarSize={1}
+            onSelectionModelChange={(newSelection) => {
+              setSelection(newSelection);
+            }}
           />
         </Box>
       </Grid>

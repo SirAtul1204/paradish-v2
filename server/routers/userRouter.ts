@@ -5,7 +5,6 @@ import * as jose from "jose";
 import { TRPCError } from "@trpc/server";
 import { prisma } from "../prisma";
 import { setCookie } from "cookies-next";
-import { KeyObject } from "crypto";
 import { secretKey } from "../../utils/key";
 import { Role } from "@prisma/client";
 import { verifyCookie } from "../verifyCookie";
@@ -173,6 +172,62 @@ export const userRouter = t.router({
       return {
         message: "User created successfully",
         signedUrl: await getSignedUrlForProfilePic(id, input.extension),
+      };
+    }),
+  signOut: t.procedure.mutation(async ({ ctx }) => {
+    setCookie("user-token", "", {
+      req: ctx.req,
+      res: ctx.res,
+      httpOnly: true,
+    });
+  }),
+  deleteUser: t.procedure
+    .input(
+      z.object({
+        ids: z.array(z.string()),
+      })
+    )
+    .mutation(async ({ input, ctx }) => {
+      const payload = await verifyCookie(ctx);
+      const requestor = await getRequestor(payload);
+      if (!(requestor.role === Role.OWNER || requestor.role === Role.MANAGER))
+        throw new TRPCError({
+          code: "FORBIDDEN",
+          message: "You are not authorized to access this resource.",
+        });
+
+      const ids = input.ids.filter((id) => id !== requestor.id);
+
+      const users = await prisma.user.findMany({
+        where: {
+          id: {
+            in: ids,
+          },
+        },
+      });
+
+      const eligibleForDeletion = users.filter((user) => {
+        if (user.role === Role.OWNER) {
+          return false;
+        } else if (user.role === Role.MANAGER) {
+          return requestor.role === Role.OWNER;
+        } else {
+          return true;
+        }
+      });
+
+      const eligibleIds = eligibleForDeletion.map((user) => user.id);
+
+      await prisma.user.deleteMany({
+        where: {
+          id: {
+            in: eligibleIds,
+          },
+        },
+      });
+
+      return {
+        message: "Eligible users deleted successfully",
       };
     }),
 });

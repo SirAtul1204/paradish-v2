@@ -17,6 +17,7 @@ import { file2Base64 } from "../../utils/file2Base64";
 import Spinner from "../../components/Spinner";
 import { DateTime } from "luxon";
 import axios from "axios";
+import { useRouter } from "next/router";
 
 const AddEmployees = () => {
   const [name, setName] = useState("");
@@ -31,7 +32,9 @@ const AddEmployees = () => {
   const [doj, setDoj] = useState<DateTime | null>(null);
   const [salary, setSalary] = useState(0);
 
-  const { mutate, isLoading } = trpc.user.create.useMutation({
+  const router = useRouter();
+
+  const { mutate, isLoading, isSuccess } = trpc.user.create.useMutation({
     onSuccess: async (data) => {
       const config = {
         method: "put",
@@ -44,7 +47,7 @@ const AddEmployees = () => {
 
       axios(config)
         .then(function (response) {
-          console.log(JSON.stringify(response.data));
+          router.push("/employees");
         })
         .catch(function (error) {
           console.log(error);
@@ -87,7 +90,7 @@ const AddEmployees = () => {
     }
   };
 
-  if (isLoading) return <Spinner loadingText="Adding Employee" />;
+  if (isLoading || isSuccess) return <Spinner loadingText="Adding Employee" />;
 
   return (
     <Grid

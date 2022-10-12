@@ -1,10 +1,22 @@
 import { AppBar, Button, Grid } from "@mui/material";
 import { Container } from "@mui/system";
+import { removeCookies } from "cookies-next";
 import { useRouter } from "next/router";
+import { trpc } from "../utils/trpc";
 import MaterialImage from "./MaterialImage";
 
 const Nav = () => {
   const router = useRouter();
+
+  const { mutate } = trpc.user.signOut.useMutation({
+    onSuccess: () => {
+      router.push("/login");
+    },
+  });
+
+  const handleSignOut = () => {
+    mutate();
+  };
 
   return (
     <AppBar sx={{ paddingY: 2 }}>
@@ -15,6 +27,7 @@ const Nav = () => {
               src="/assets/Paradish-white.png"
               width={100}
               height={50}
+              onClick={() => router.push("/")}
             />
           </Grid>
           <Grid item>
@@ -28,7 +41,9 @@ const Nav = () => {
                 </Button>
               </Grid>
               <Grid item>
-                <Button variant="contained">Sign Out</Button>
+                <Button variant="contained" onClick={handleSignOut}>
+                  Sign Out
+                </Button>
               </Grid>
               <Grid item>
                 <Button

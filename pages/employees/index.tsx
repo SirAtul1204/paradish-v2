@@ -65,7 +65,7 @@ const Employees = () => {
       headerName: "Email",
       width: 250,
     },
-    { field: "role", headerName: "Role", width: 80 },
+    { field: "role", headerName: "Role", width: 120 },
     { field: "phone", headerName: "Phone", width: 150 },
     {
       field: "aadharNumber",

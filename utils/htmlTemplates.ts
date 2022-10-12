@@ -1,5 +1,6 @@
 export enum HtmlTemplates {
   REGISTER_RESTAURANT = "registerRestaurant",
+  REGISTER_EMPLOYEE = "registerEmployee",
 }
 
 export const getHtmlTemplate = (type: HtmlTemplates, data: any) => {
@@ -19,5 +20,19 @@ export const getHtmlTemplate = (type: HtmlTemplates, data: any) => {
         </p>
     </div>
 </div>`;
+
+    case HtmlTemplates.REGISTER_EMPLOYEE:
+      return `<div style="background-color: #f5f5f5; padding: 20px;">
+    <div style="max-width: 600px; margin: 0 auto; background-color: #fff; padding: 20px;">
+        <p>Hi, ${data.name}</p>
+        <p>You have been added as an employee to ${data.restaurantName} on Paradish.</p>
+        <p>Your temporary token is <b>${data.token}</b></p>
+        <p>Please use this token to set your password by clicking the below button</p>
+        <a href="https://paradish.vercel.app/employee/setPassword/${data.token}" style="text-decoration: none; color: #fff; background-color: #000; padding: 10px 20px; border-radius: 5px; display: inline-block; margin: 20px 0;">Set Password</a>
+        <p>If you have any questions, please contact us at
+            <a href="mailto:paradish1214@gmail.com">paradish1214@gmail.com</a>
+        </p>
+    </div>
+  </div>`;
   }
 };

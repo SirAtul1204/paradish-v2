@@ -12,6 +12,12 @@ import { getRequestor } from "../getRequestor";
 import { generateId } from "../../utils/generateId";
 import { DateTime } from "luxon";
 import { getSignedUrlForProfilePic } from "../../utils/aws";
+import {
+  EMPLOYEE_ID_LENGTH,
+  EMPLOYEE_TEMPORARY_TOKEN_LENGTH,
+} from "../../utils/constants";
+import sendEmail, { EmailSubjects } from "../../utils/sendEmail";
+import { getHtmlTemplate, HtmlTemplates } from "../../utils/htmlTemplates";
 
 export const userRouter = t.router({
   login: t.procedure
@@ -133,13 +139,20 @@ export const userRouter = t.router({
         });
       }
 
-      //TODO : Generate password
-      const hashedPassword = await bcrypt.hash("some pass here", 10);
-      console.log("hashedPassword", hashedPassword);
+      const password = await generateId(EMPLOYEE_TEMPORARY_TOKEN_LENGTH);
+      const hashedPassword = await bcrypt.hash(password, 10);
       let id = "";
       do {
-        id = generateId(6);
+        id = generateId(EMPLOYEE_ID_LENGTH);
       } while (await prisma!.user.findUnique({ where: { id } }));
+
+      let resetPasswordToken = "";
+
+      do {
+        resetPasswordToken = generateId(EMPLOYEE_TEMPORARY_TOKEN_LENGTH);
+      } while (
+        await prisma!.user.findUnique({ where: { resetPasswordToken } })
+      );
 
       const newUser = await prisma.user.create({
         data: {
@@ -156,6 +169,7 @@ export const userRouter = t.router({
           dob: input.dob,
           doj: input.doj,
           salary: input.salary,
+          resetPasswordToken: resetPasswordToken,
           photo: `https://${process.env.AWS_S3_BUCKET_NAME!}.s3.${process.env
             .AWS_S3_REGION!}.amazonaws.com/profile_pictures/${id}.${
             input.extension
@@ -168,6 +182,30 @@ export const userRouter = t.router({
           code: "INTERNAL_SERVER_ERROR",
           message: "Something went wrong",
         });
+
+      const restaurant = await prisma.restaurant.findUnique({
+        where: {
+          id: requestor.restaurantId,
+        },
+      });
+
+      if (!restaurant)
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message: "Something went wrong",
+        });
+
+      sendEmail({
+        email: input.email,
+        subject: EmailSubjects.GetPassword,
+        name: input.name,
+        restaurantName: restaurant.name,
+        htmlTemplate: getHtmlTemplate(HtmlTemplates.REGISTER_EMPLOYEE, {
+          name: input.name,
+          restaurantName: restaurant.name,
+          token: resetPasswordToken,
+        }),
+      });
 
       return {
         message: "User created successfully",
@@ -228,6 +266,51 @@ export const userRouter = t.router({
 
       return {
         message: "Eligible users deleted successfully",
+      };
+    }),
+  updatePassword: t.procedure
+    .input(
+      z.object({
+        tempToken: z.string().length(EMPLOYEE_TEMPORARY_TOKEN_LENGTH),
+        password: z.string(),
+      })
+    )
+    .mutation(async ({ input, ctx }) => {
+      const user = await prisma.user.findUnique({
+        where: {
+          resetPasswordToken: input.tempToken,
+        },
+      });
+
+      if (!user)
+        throw new TRPCError({
+          code: "NOT_FOUND",
+          message: "User not found",
+        });
+
+      const hashedPassword = await bcrypt.hash(input.password, 10);
+
+      let newResetPasswordToken = "";
+      do {
+        newResetPasswordToken = generateId(EMPLOYEE_TEMPORARY_TOKEN_LENGTH);
+      } while (
+        await prisma.user.findUnique({
+          where: { resetPasswordToken: newResetPasswordToken },
+        })
+      );
+
+      await prisma.user.update({
+        where: {
+          id: user.id,
+        },
+        data: {
+          password: hashedPassword,
+          resetPasswordToken: newResetPasswordToken,
+        },
+      });
+
+      return {
+        message: "Password updated successfully",
       };
     }),
 });

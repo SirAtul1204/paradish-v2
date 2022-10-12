@@ -14,9 +14,9 @@ export async function middleware(request: NextRequest) {
       pathname.startsWith("/_next") || // exclude Next.js internals
       pathname.startsWith("/api") || //  exclude all API routes
       pathname.startsWith("/static") || // exclude static files
-      PUBLIC_FILE.test(pathname) ||
+      pathname.startsWith("/employees/setPassword/") || // exclude setPassword route
+      PUBLIC_FILE.test(pathname) || // exclude all files in the public folder
       publicRoutes.includes(pathname)
-      // exclude all files in the public folder
     )
       return NextResponse.next();
 

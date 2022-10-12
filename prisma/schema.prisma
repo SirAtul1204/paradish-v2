@@ -16,21 +16,22 @@ model Restaurant {
 }
 
 model User {
-  id           String     @id
-  name         String?
-  email        String     @unique
-  password     String
-  role         Role
-  restaurantId String
-  address      String?
-  aadharNumber String?
-  panNumber    String?
-  phone        String?    @unique
-  photo        String?
-  dob          String?
-  doj          String?
-  salary       Float?
-  Restaurant   Restaurant @relation(fields: [restaurantId], references: [id], onDelete: Cascade)
+  id                 String     @id
+  name               String?
+  email              String     @unique
+  password           String
+  role               Role
+  restaurantId       String
+  address            String?
+  aadharNumber       String?
+  panNumber          String?
+  phone              String?    @unique
+  photo              String?
+  dob                String?
+  doj                String?
+  salary             Float?
+  resetPasswordToken String?    @unique
+  Restaurant         Restaurant @relation(fields: [restaurantId], references: [id], onDelete: Cascade)
 }
 
 enum Role {

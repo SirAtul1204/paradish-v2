@@ -7,6 +7,10 @@ import * as bcrypt from "bcrypt";
 import sendEmail, { EmailSubjects } from "../../utils/sendEmail";
 import { getHtmlTemplate, HtmlTemplates } from "../../utils/htmlTemplates";
 import { prisma } from "../prisma";
+import {
+  EMPLOYEE_ID_LENGTH,
+  EMPLOYEE_TEMPORARY_TOKEN_LENGTH,
+} from "../../utils/constants";
 
 export const restaurantRouter = t.router({
   create: t.procedure
@@ -44,10 +48,17 @@ export const restaurantRouter = t.router({
 
       let id = "";
       do {
-        id = generateId(6);
+        id = generateId(EMPLOYEE_ID_LENGTH);
       } while (await prisma!.user.findUnique({ where: { id } }));
 
       const hashedPassword = await bcrypt.hash(input.password, 10);
+
+      let resetPasswordToken = "";
+      do {
+        resetPasswordToken = generateId(EMPLOYEE_TEMPORARY_TOKEN_LENGTH);
+      } while (
+        await prisma!.user.findUnique({ where: { resetPasswordToken } })
+      );
 
       const user = await prisma.user.create({
         data: {
@@ -56,6 +67,7 @@ export const restaurantRouter = t.router({
           password: hashedPassword,
           restaurantId: restaurant.id,
           role: Role.OWNER,
+          resetPasswordToken: resetPasswordToken,
         },
       });
 

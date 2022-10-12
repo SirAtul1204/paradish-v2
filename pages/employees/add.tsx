@@ -191,7 +191,8 @@ const AddEmployees = () => {
               <Grid item lg={6} container direction="column" spacing={3}>
                 <Grid item>
                   <DatePicker
-                    mask="__.__.____"
+                    disableMaskedInput
+                    inputFormat="dd/MM/yyyy"
                     value={dob}
                     onChange={(e) => {
                       setDob(e);
@@ -238,11 +239,13 @@ const AddEmployees = () => {
                       setPhoto(e.target.files?.[0]);
                     }}
                     required
+                    inputProps={{ accept: "image/*" }}
                   />
                 </Grid>
                 <Grid item>
                   <DatePicker
-                    mask="__.__.____"
+                    disableMaskedInput
+                    inputFormat="dd/MM/yyyy"
                     value={doj}
                     onChange={(e) => {
                       setDoj(e);

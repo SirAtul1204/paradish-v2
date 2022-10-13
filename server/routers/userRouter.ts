@@ -452,4 +452,16 @@ export const userRouter = t.router({
         };
       }
     }),
+  isAuthenticated: t.procedure.query(async ({ ctx }) => {
+    if (!ctx.req.cookies["user-token"]) return { isAuthenticated: false };
+
+    const { payload } = await jose.jwtVerify(
+      ctx.req.cookies["user-token"],
+      secretKey
+    );
+
+    if (!payload) return { isAuthenticated: false };
+
+    return { isAuthenticated: true };
+  }),
 });

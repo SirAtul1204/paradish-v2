@@ -11,8 +11,10 @@ const Login = () => {
 
   const router = useRouter();
   const dispatch = useDispatch();
+  const utils = trpc.useContext();
   const { mutate, isLoading, isSuccess } = trpc.user.login.useMutation({
     onSuccess: () => {
+      utils.user.isAuthenticated.invalidate();
       router.push("/dashboard");
     },
     onError: (err) => {

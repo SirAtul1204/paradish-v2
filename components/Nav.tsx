@@ -54,13 +54,23 @@ const Nav = () => {
                     </Button>
                   </Grid>
                 )}
-                {!data?.isAuthenticated && (
+                {!data?.isAuthenticated && router?.asPath !== "/login" && (
                   <Grid item>
                     <Button
                       variant="contained"
                       onClick={(e) => router.push("/login")}
                     >
                       Login
+                    </Button>
+                  </Grid>
+                )}
+                {router?.asPath === "/login" && (
+                  <Grid item>
+                    <Button
+                      variant="contained"
+                      onClick={(e) => router.push("/")}
+                    >
+                      Signup
                     </Button>
                   </Grid>
                 )}

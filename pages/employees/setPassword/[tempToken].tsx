@@ -1,5 +1,10 @@
 import { useRouter } from "next/router";
-import { Box, Button, Grid, Paper, TextField, Typography } from "@mui/material";
+import Box from "@mui/material/Box";
+import Button from "@mui/material/Button";
+import Paper from "@mui/material/Paper";
+import TextField from "@mui/material/TextField";
+import Typography from "@mui/material/Typography";
+import Grid from "@mui/material/Grid";
 import { FormEvent, useState } from "react";
 import { useDispatch } from "react-redux";
 import { openAlert } from "../../../redux/alertReducer";

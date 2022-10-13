@@ -1,4 +1,9 @@
-import { Box, Button, Grid, Paper, TextField, Typography } from "@mui/material";
+import Box from "@mui/material/Box";
+import Button from "@mui/material/Button";
+import Grid from "@mui/material/Grid";
+import Paper from "@mui/material/Paper";
+import TextField from "@mui/material/TextField";
+import Typography from "@mui/material/Typography";
 import { useRouter } from "next/router";
 import { FormEvent, useState } from "react";
 import Spinner from "../components/Spinner";

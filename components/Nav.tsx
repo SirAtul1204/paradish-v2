@@ -1,5 +1,7 @@
-import { AppBar, Button, Grid } from "@mui/material";
-import { Container } from "@mui/system";
+import AppBar from "@mui/material/AppBar";
+import Button from "@mui/material/Button";
+import Grid from "@mui/material/Grid";
+import Container from "@mui/material/Container";
 import { useRouter } from "next/router";
 import { trpc } from "../utils/trpc";
 import MaterialImage from "./MaterialImage";

@@ -1,12 +1,10 @@
-import {
-  Button,
-  Grid,
-  Input,
-  TextField,
-  Typography,
-  Box,
-  Paper,
-} from "@mui/material";
+import Button from "@mui/material/Button";
+import Grid from "@mui/material/Grid";
+import Input from "@mui/material/Input";
+import TextField from "@mui/material/TextField";
+import Typography from "@mui/material/Typography";
+import Box from "@mui/material/Box";
+import Paper from "@mui/material/Paper";
 import type { NextPage } from "next";
 import { useRouter } from "next/router";
 import { FormEvent, useState } from "react";

@@ -1,7 +1,7 @@
-import { Box, Button, Card, Grid, Typography } from "@mui/material";
+import Box from "@mui/material/Box";
+import Grid from "@mui/material/Grid";
 import { useRouter } from "next/router";
 import CardButton from "../components/CardButton";
-import MaterialImage from "../components/MaterialImage";
 
 const Dashboard = () => {
   const router = useRouter();

@@ -1,19 +1,16 @@
-import {
-  FormControl,
-  Grid,
-  InputLabel,
-  MenuItem,
-  Paper,
-  Select,
-  TextField,
-  Typography,
-  Button,
-} from "@mui/material";
+import FormControl from "@mui/material/FormControl";
+import Grid from "@mui/material/Grid";
+import InputLabel from "@mui/material/InputLabel";
+import MenuItem from "@mui/material/MenuItem";
+import Paper from "@mui/material/Paper";
+import Select from "@mui/material/Select";
+import TextField from "@mui/material/TextField";
+import Typography from "@mui/material/Typography";
+import Button from "@mui/material/Button";
 import { Role } from "@prisma/client";
 import { DatePicker } from "@mui/x-date-pickers";
-import { FormEvent, useEffect, useState } from "react";
+import { FormEvent, useState } from "react";
 import { trpc } from "../../utils/trpc";
-import { file2Base64 } from "../../utils/file2Base64";
 import Spinner from "../../components/Spinner";
 import { DateTime } from "luxon";
 import axios from "axios";

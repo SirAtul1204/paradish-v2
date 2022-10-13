@@ -1,20 +1,17 @@
-import {
-  Grid,
-  TextField,
-  Typography,
-  Box,
-  Avatar,
-  Select,
-  MenuItem,
-  InputLabel,
-  FormControl,
-  Button,
-} from "@mui/material";
+import Grid from "@mui/material/Grid";
+import TextField from "@mui/material/TextField";
+import Typography from "@mui/material/Typography";
+import Box from "@mui/material/Box";
+import Avatar from "@mui/material/Avatar";
+import Select from "@mui/material/Select";
+import MenuItem from "@mui/material/MenuItem";
+import InputLabel from "@mui/material/InputLabel";
+import FormControl from "@mui/material/FormControl";
+import Button from "@mui/material/Button";
 import { DataGrid } from "@mui/x-data-grid";
-import { Role } from "@prisma/client";
 import { DateTime } from "luxon";
 import { useRouter } from "next/router";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useDispatch } from "react-redux";
 import Spinner from "../../components/Spinner";
 import { openAlert } from "../../redux/alertReducer";

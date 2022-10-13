@@ -70,7 +70,7 @@ const Nav = () => {
                       variant="contained"
                       onClick={(e) => router.push("/")}
                     >
-                      Signup
+                      Sign up
                     </Button>
                   </Grid>
                 )}

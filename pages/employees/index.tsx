@@ -148,7 +148,7 @@ const Employees = () => {
         justifyContent="center"
       >
         <Grid item>
-          <Typography variant="h6" color="success" textAlign="center">
+          <Typography variant="h6" color="success.main" textAlign="center">
             Add Employee
           </Typography>
         </Grid>

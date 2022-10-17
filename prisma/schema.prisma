@@ -10,9 +10,10 @@ datasource db {
 }
 
 model Restaurant {
-  id        String @id @default(cuid())
+  id        String      @id @default(cuid())
   name      String
   employees User[]
+  Inventory Inventory[]
 }
 
 model User {
@@ -32,6 +33,18 @@ model User {
   salary             Float?
   resetPasswordToken String?    @unique
   Restaurant         Restaurant @relation(fields: [restaurantId], references: [id], onDelete: Cascade)
+}
+
+model Inventory {
+  id               String     @id
+  name             String
+  quantity         Float
+  unit             String
+  pricePerUnit     Float
+  photo            String?
+  dateOfLastUpdate String?
+  restaurantId     String
+  Restaurant       Restaurant @relation(fields: [restaurantId], references: [id], onDelete: Cascade)
 }
 
 enum Role {

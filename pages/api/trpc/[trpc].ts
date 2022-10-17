@@ -5,10 +5,12 @@ import { restaurantRouter } from "../../../server/routers/restaurantRouter";
 import { userRouter } from "../../../server/routers/userRouter";
 import { t } from "../../../server/t";
 import { createContext } from "../../../server/createContext";
+import { inventoryRouter } from "../../../server/routers/inventoryRouter";
 export const appRouter = t.router({
   hello: helloRouter,
   restaurant: restaurantRouter,
   user: userRouter,
+  inventory: inventoryRouter,
 });
 
 // export type definition of API

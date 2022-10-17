@@ -28,7 +28,7 @@ export const getHtmlTemplate = (type: HtmlTemplates, data: any) => {
         <p>You have been added as an employee to ${data.restaurantName} on Paradish.</p>
         <p>Your temporary token is <b>${data.token}</b></p>
         <p>Please use this token to set your password by clicking the below button</p>
-        <a href="https://paradish.vercel.app/employee/setPassword/${data.token}" style="text-decoration: none; color: #fff; background-color: #000; padding: 10px 20px; border-radius: 5px; display: inline-block; margin: 20px 0;">Set Password</a>
+        <a href="https://paradish.vercel.app/employees/setPassword/${data.token}" style="text-decoration: none; color: #fff; background-color: #000; padding: 10px 20px; border-radius: 5px; display: inline-block; margin: 20px 0;">Set Password</a>
         <p>If you have any questions, please contact us at
             <a href="mailto:paradish1214@gmail.com">paradish1214@gmail.com</a>
         </p>

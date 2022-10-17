@@ -15,6 +15,7 @@ export const inventoryRouter = t.router({
         quantity: z.number(),
         unit: z.string(),
         pricePerUnit: z.number(),
+        extension: z.string(),
       })
     )
     .mutation(async ({ input, ctx }) => {
@@ -34,6 +35,12 @@ export const inventoryRouter = t.router({
           unit: input.unit,
           pricePerUnit: input.pricePerUnit,
           restaurantId: requestor.restaurantId,
+          photo: input.extension
+            ? `https://${process.env.AWS_S3_BUCKET_NAME!}.s3.${process.env
+                .AWS_S3_REGION!}.amazonaws.com/inventory_pics/${id}.${
+                input.extension
+              }`
+            : "",
         },
       });
 

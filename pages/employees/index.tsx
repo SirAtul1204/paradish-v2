@@ -206,7 +206,7 @@ const Employees = () => {
       >
         <Grid item lg={4}>
           <FormControl fullWidth>
-            <InputLabel id="select-filter">Age</InputLabel>
+            <InputLabel id="select-filter">Filter</InputLabel>
             <Select
               fullWidth
               label="Filter"

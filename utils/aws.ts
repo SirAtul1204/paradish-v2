@@ -28,3 +28,22 @@ export const getSignedUrlForProfilePic = async (
     return null;
   }
 };
+
+export const getSignedUrlForInventoryPic = async (
+  key: string,
+  extension: string
+) => {
+  try {
+    const params = {
+      Bucket: process.env.AWS_S3_BUCKET_NAME!,
+      Key: `inventory_pics/${key}.${extension}`,
+      Expires: 60 * 60 * 24 * 7,
+      ContentType: `image/${extension}`,
+    };
+
+    const url = await s3.getSignedUrlPromise("putObject", params);
+    return url;
+  } catch (e) {
+    return null;
+  }
+};

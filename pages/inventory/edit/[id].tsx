@@ -1,23 +1,25 @@
-import Paper from "@mui/material/Paper";
-import Typography from "@mui/material/Typography";
-import TextField from "@mui/material/TextField";
 import Grid from "@mui/material/Grid";
+import Typography from "@mui/material/Typography";
+import Paper from "@mui/material/Paper";
+import TextField from "@mui/material/TextField";
 import Button from "@mui/material/Button";
 import { FormEvent, useState } from "react";
-import { trpc } from "../../utils/trpc";
-import Spinner from "../../components/Spinner";
+import { trpc } from "../../../utils/trpc";
 import { useRouter } from "next/router";
+import Spinner from "../../../components/Spinner";
 import axios from "axios";
-const AddInventoryItem = () => {
+
+const EditInventory = () => {
+  const router = useRouter();
+  const { id } = router.query;
+
   const [name, setName] = useState("");
   const [quantity, setQuantity] = useState(0);
   const [unit, setUnit] = useState("");
   const [pricePerUnit, setPricePerUnit] = useState(0);
   const [photo, setPhoto] = useState<File>();
 
-  const router = useRouter();
-
-  const { mutate, isLoading, isSuccess } = trpc.inventory.addItem.useMutation({
+  const editMutation = trpc.inventory.updateItem.useMutation({
     onSuccess: (data) => {
       if (data.signedUrl) {
         const config = {
@@ -33,17 +35,19 @@ const AddInventoryItem = () => {
           .then((response) => {
             router.push("/inventory");
           })
-          .catch((error) => {
+          .catch(function (error) {
             console.log(error);
           });
+      } else {
+        router.push("/inventory");
       }
-      router.push("/inventory");
     },
   });
 
   const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    mutate({
+    editMutation.mutate({
+      id: id as string,
       name,
       quantity,
       unit,
@@ -52,33 +56,35 @@ const AddInventoryItem = () => {
     });
   };
 
-  if (isLoading || isSuccess) return <Spinner loadingText="Adding item..." />;
+  const { isLoading } = trpc.inventory.getById.useQuery(
+    {
+      id: id as string,
+    },
+    {
+      onSuccess: (data) => {
+        setName(data.name);
+        setQuantity(data.quantity);
+        setUnit(data.unit);
+        setPricePerUnit(data.pricePerUnit);
+      },
+    }
+  );
+
+  if (isLoading) return <Spinner loadingText="Loading item..." />;
+
+  if (editMutation.isLoading) return <Spinner loadingText="Updating item..." />;
 
   return (
-    <Grid
-      container
-      direction="column"
-      spacing={3}
-      alignItems="center"
-      justifyContent="center"
-      sx={{ width: "40%", margin: "0 auto" }}
-    >
-      <Grid item>
+    <Grid container spacing={3} direction="column" width="90%" margin="auto">
+      <Grid item alignSelf="center">
         <Typography variant="h5" color="secondary" textAlign="center">
-          Add Item to Inventory
+          Edit Inventory Item
         </Typography>
       </Grid>
-      <Grid item sx={{ width: "100%" }}>
-        <Paper sx={{ padding: 2 }}>
-          <form onSubmit={handleSubmit}>
-            <Grid
-              container
-              spacing={2}
-              alignItems="stretch"
-              justifyContent="center"
-              direction="column"
-              width={"100%"}
-            >
+      <Grid item>
+        <form onSubmit={handleSubmit}>
+          <Paper sx={{ padding: 3, width: "90%", marginX: "auto" }}>
+            <Grid container direction="column" spacing={2}>
               <Grid item>
                 <TextField
                   required
@@ -123,11 +129,11 @@ const AddInventoryItem = () => {
               </Grid>
               <Grid item>
                 <TextField
+                  helperText="Leave blank to keep current photo"
                   label="Photo"
                   type="file"
                   variant="standard"
                   fullWidth
-                  helperText="Leave empty for auto generated photo"
                   onChange={(e) => {
                     //@ts-ignore
                     setPhoto(e.target.files?.[0]);
@@ -136,15 +142,15 @@ const AddInventoryItem = () => {
               </Grid>
               <Grid item alignSelf="flex-end">
                 <Button variant="outlined" color="primary" type="submit">
-                  Add
+                  Update
                 </Button>
               </Grid>
             </Grid>
-          </form>
-        </Paper>
+          </Paper>
+        </form>
       </Grid>
     </Grid>
   );
 };
 
-export default AddInventoryItem;
+export default EditInventory;

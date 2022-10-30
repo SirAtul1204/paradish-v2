@@ -10,10 +10,12 @@ datasource db {
 }
 
 model Restaurant {
-  id        String      @id @default(cuid())
-  name      String
-  employees User[]
-  Inventory Inventory[]
+  id         String      @id @default(cuid())
+  name       String
+  categories String?
+  employees  User[]
+  Inventory  Inventory[]
+  Menu       Menu[]
 }
 
 model User {
@@ -45,6 +47,16 @@ model Inventory {
   dateOfLastUpdate String?
   restaurantId     String
   Restaurant       Restaurant @relation(fields: [restaurantId], references: [id], onDelete: Cascade)
+}
+
+model Menu {
+  id           String     @id
+  name         String
+  price        Float
+  calories     Float
+  type         String
+  restaurantId String
+  Restaurant   Restaurant @relation(fields: [restaurantId], references: [id], onDelete: Cascade)
 }
 
 enum Role {

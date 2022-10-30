@@ -11,6 +11,9 @@ import {
   EMPLOYEE_ID_LENGTH,
   EMPLOYEE_TEMPORARY_TOKEN_LENGTH,
 } from "../../utils/constants";
+import { verifyCookie } from "../verifyCookie";
+import { getRequestor } from "../getRequestor";
+import { deFormatCategoryName } from "../../utils/deFormatCategoryName";
 
 export const restaurantRouter = t.router({
   create: t.procedure
@@ -91,4 +94,36 @@ export const restaurantRouter = t.router({
         user,
       };
     }),
+  getTypes: t.procedure.query(async ({ ctx }) => {
+    const payload = await verifyCookie(ctx);
+    const requestor = await getRequestor(payload);
+
+    if (!(requestor.role === Role.OWNER || requestor.role === Role.MANAGER)) {
+      throw new TRPCError({
+        code: "UNAUTHORIZED",
+        message: "Unauthorized",
+      });
+    }
+
+    const restaurant = await prisma.restaurant.findUnique({
+      where: {
+        id: requestor.restaurantId,
+      },
+    });
+
+    if (!restaurant) {
+      throw new TRPCError({
+        code: "NOT_FOUND",
+        message: "Restaurant not found",
+      });
+    }
+
+    if (!restaurant.categories) return { categories: [] };
+
+    const categories = restaurant.categories.split(",");
+    const formattedCategories = categories.map((category) =>
+      deFormatCategoryName(category)
+    );
+    return { categories: formattedCategories };
+  }),
 });

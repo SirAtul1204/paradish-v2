@@ -96,4 +96,79 @@ export const menuRouter = t.router({
 
       return { message: "Menu item created successfully" };
     }),
+  getMenu: t.procedure.query(async ({ ctx }) => {
+    const payload = await verifyCookie(ctx);
+    const requestor = await getRequestor(payload);
+
+    const restaurant = await prisma.restaurant.findUnique({
+      where: {
+        id: requestor.restaurantId,
+      },
+    });
+
+    if (!restaurant)
+      throw new TRPCError({
+        code: "NOT_FOUND",
+        message: "Restaurant not found",
+      });
+
+    if (!restaurant.categories) return {};
+
+    const categories = restaurant.categories.split(",");
+    const formattedCategories = categories.map((category) =>
+      deFormatCategoryName(category)
+    );
+
+    const menuItems = await prisma.menu.findMany({
+      where: {
+        restaurantId: requestor.restaurantId,
+      },
+      include: {
+        Ingredients: true,
+      },
+    });
+
+    if (!menuItems) {
+      throw new TRPCError({
+        code: "NOT_FOUND",
+        message: "Menu items not found",
+      });
+    }
+
+    const menu: any = {};
+    formattedCategories.forEach((category) => {
+      menu[category] = [];
+    });
+
+    menuItems.forEach((item) => {
+      menu[item.type].push(item);
+    });
+
+    return { message: "Menu retrieved successfully", menu };
+  }),
+  getAllSorted: t.procedure.query(async ({ ctx }) => {
+    const payload = await verifyCookie(ctx);
+    const requestor = await getRequestor(payload);
+
+    const menuItems = await prisma.menu.findMany({
+      where: {
+        restaurantId: requestor.restaurantId,
+      },
+    });
+
+    if (!menuItems) {
+      throw new TRPCError({
+        code: "NOT_FOUND",
+        message: "Menu items not found",
+      });
+    }
+
+    menuItems.sort((a, b) => {
+      if (a.name < b.name) return -1;
+      if (a.name > b.name) return 1;
+      return 0;
+    });
+
+    return { message: "Items retrieved successfully", items: menuItems };
+  }),
 });

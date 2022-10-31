@@ -13,10 +13,21 @@ import { useState } from "react";
 import Button from "@mui/material/Button";
 import FormControlLabel from "@mui/material/FormControlLabel";
 import { useRouter } from "next/router";
+import { trpc } from "../../utils/trpc";
+import Spinner from "../../components/Spinner";
+import { Ingredient, Menu } from "@prisma/client";
 
 const Menu = () => {
   const router = useRouter();
   const [isShowingIngredients, setIsShowingIngredients] = useState(false);
+
+  const { data, isLoading } = trpc.menu.getMenu.useQuery(undefined, {
+    onSuccess: (data) => {
+      console.log(data);
+    },
+  });
+
+  if (isLoading) return <Spinner loadingText="Loading menu..." />;
 
   return (
     <Grid
@@ -63,40 +74,54 @@ const Menu = () => {
       </Grid>
       <Grid item width={"70%"}>
         <Paper elevation={2} sx={{ padding: 3 }}>
-          <Accordion sx={{ border: "1px solid #fff" }}>
-            <AccordionSummary
-              expandIcon={<ExpandMore color="primary" fontSize="large" />}
-              aria-label="Expand"
-              aria-controls="1-content"
-              id="1-header"
-            >
-              <Typography fontWeight={700} color="primary">
-                Starters
-              </Typography>
-            </AccordionSummary>
-            <AccordionDetails>
-              <List>
-                <ListItem sx={{ border: "1px solid #fff" }}>
-                  <ListItemText
-                    primary="Soup of the day"
-                    secondary={`calories`}
-                  />
-                  {`£4.50`}
-                </ListItem>
-                {isShowingIngredients && (
-                  <List sx={{ px: 8, border: "1px solid #fff" }}>
-                    <ListItem disablePadding>
-                      <ListItemText
-                        primary="Tomato"
-                        primaryTypographyProps={{ fontSize: 15 }}
-                      />
-                      {`Quantity`}
-                    </ListItem>
-                  </List>
-                )}
-              </List>
-            </AccordionDetails>
-          </Accordion>
+          {Object.keys(data?.menu).map((type) => {
+            return (
+              <Accordion key={type} sx={{ border: "1px solid #fff" }}>
+                <AccordionSummary
+                  expandIcon={<ExpandMore color="primary" fontSize="large" />}
+                  aria-label="Expand"
+                  aria-controls="1-content"
+                  id="1-header"
+                >
+                  <Typography fontWeight={700} color="primary">
+                    {type}
+                  </Typography>
+                </AccordionSummary>
+                <AccordionDetails>
+                  {data?.menu[type].map(
+                    (item: Menu & { Ingredients: Ingredient[] }) => {
+                      return (
+                        <List key={item.id}>
+                          <ListItem sx={{ border: "1px solid #fff" }}>
+                            <ListItemText
+                              primary={item.name}
+                              secondary={`${item.calories} calories`}
+                            />
+                            {`₹ ${item.price}`}
+                          </ListItem>
+                          {isShowingIngredients &&
+                            item.Ingredients &&
+                            item.Ingredients.length > 0 && (
+                              <List sx={{ px: 8, border: "1px solid #fff" }}>
+                                {item.Ingredients.map((ingredient) => (
+                                  <ListItem key={ingredient.id} disablePadding>
+                                    <ListItemText
+                                      primary={ingredient.name}
+                                      primaryTypographyProps={{ fontSize: 15 }}
+                                    />
+                                    {ingredient.quantity}
+                                  </ListItem>
+                                ))}
+                              </List>
+                            )}
+                        </List>
+                      );
+                    }
+                  )}
+                </AccordionDetails>
+              </Accordion>
+            );
+          })}
         </Paper>
       </Grid>
     </Grid>

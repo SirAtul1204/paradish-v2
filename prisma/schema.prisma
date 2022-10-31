@@ -50,13 +50,25 @@ model Inventory {
 }
 
 model Menu {
-  id           String     @id
+  id           String       @id
   name         String
   price        Float
   calories     Float
   type         String
   restaurantId String
-  Restaurant   Restaurant @relation(fields: [restaurantId], references: [id], onDelete: Cascade)
+  Restaurant   Restaurant   @relation(fields: [restaurantId], references: [id], onDelete: Cascade)
+  Ingredients  Ingredient[]
+}
+
+model Ingredient {
+  id           String  @id
+  name         String
+  quantity     Float
+  unit         String
+  pricePerUnit Float
+  photo        String?
+  menuId       String?
+  Menu         Menu?   @relation(fields: [menuId], references: [id], onDelete: Cascade)
 }
 
 enum Role {

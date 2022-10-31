@@ -6,12 +6,17 @@ import { trpc } from "../utils/trpc";
 import Spinner from "../components/Spinner";
 import WaiterDeckTile from "../components/WaiterDeckTile";
 import TextField from "@mui/material/TextField";
+import Box from "@mui/material/Box";
+import Button from "@mui/material/Button";
+import Chip from "@mui/material/Chip";
 import { useState } from "react";
+import { useSelector } from "react-redux";
+import { RootState } from "../redux/store";
 
 const WaitersDeck = () => {
   const router = useRouter();
-
   const [searchVal, setSearchVal] = useState("");
+  const { totalQuantity } = useSelector((state: RootState) => state.cart);
 
   const { data, isLoading } = trpc.menu.getAllSorted.useQuery(undefined, {
     onSuccess: (data) => {
@@ -55,6 +60,25 @@ const WaitersDeck = () => {
           })}
         </Paper>
       </Grid>
+      <Box sx={{ position: "absolute", bottom: "1rem" }}>
+        <Button
+          variant="contained"
+          color="secondary"
+          onClick={() => router.push("/menu/edit")}
+        >
+          <Grid
+            container
+            alignItems="center"
+            justifyContent="center"
+            spacing={1}
+          >
+            <Grid item>Cart</Grid>
+            <Grid item>
+              <Chip size="small" label={totalQuantity} variant="filled" />
+            </Grid>
+          </Grid>
+        </Button>
+      </Box>
     </Grid>
   );
 };

@@ -7,12 +7,14 @@ import { t } from "../../../server/t";
 import { createContext } from "../../../server/createContext";
 import { inventoryRouter } from "../../../server/routers/inventoryRouter";
 import { menuRouter } from "../../../server/routers/menuRouter";
+import { orderRouter } from "../../../server/routers/orderRouter";
 export const appRouter = t.router({
   hello: helloRouter,
   restaurant: restaurantRouter,
   user: userRouter,
   inventory: inventoryRouter,
   menu: menuRouter,
+  order: orderRouter,
 });
 
 // export type definition of API

@@ -16,6 +16,7 @@ model Restaurant {
   employees  User[]
   Inventory  Inventory[]
   Menu       Menu[]
+  Order      Order[]
 }
 
 model User {
@@ -71,9 +72,29 @@ model Ingredient {
   Menu         Menu?   @relation(fields: [menuId], references: [id], onDelete: Cascade)
 }
 
+model Order {
+  id            String      @id
+  tableNo       String
+  status        OrderStatus
+  items         String      @db.LongText
+  totalPrice    Float
+  totalQuantity Float
+  totalCalories Float
+  restaurantId  String
+  Restaurant    Restaurant  @relation(fields: [restaurantId], references: [id], onDelete: Cascade)
+}
+
 enum Role {
   OWNER
   MANAGER
   WAITER
   CHEF
+}
+
+enum OrderStatus {
+  PENDING
+  ACCEPTED
+  PROCESSING
+  CANCELLED
+  COMPLETED
 }

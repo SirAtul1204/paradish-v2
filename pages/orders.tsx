@@ -23,10 +23,12 @@ const Order = () => {
           {data?.map((order) => (
             <List key={order.id}>
               {Object.keys(JSON.parse(order.items)).map((p) => (
-                <Typography key={p}>
-                  {JSON.parse(order.items)[p].name}
-                </Typography>
+                <Grid container key={p} spacing={2}>
+                  <Grid item>{JSON.parse(order.items)[p].name} </Grid>
+                  <Grid item>{JSON.parse(order.items)[p].quantity}</Grid>
+                </Grid>
               ))}
+              <Typography>Status: {order.status}</Typography>
             </List>
           ))}
         </Card>

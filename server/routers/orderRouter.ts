@@ -56,4 +56,14 @@ export const orderRouter = t.router({
 
       return { message: "Order created successfully", orderId: order.id };
     }),
+  getAll: t.procedure.query(async ({ ctx }) => {
+    const payload = await verifyCookie(ctx);
+    const requestor = await getRequestor(payload);
+
+    const orders = await prisma.order.findMany({
+      where: { restaurantId: requestor.restaurantId },
+    });
+
+    return orders;
+  }),
 });

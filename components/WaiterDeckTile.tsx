@@ -5,8 +5,9 @@ import Chip from "@mui/material/Chip";
 import AddIcon from "@mui/icons-material/Add";
 import RemoveIcon from "@mui/icons-material/Remove";
 import { FC, useState } from "react";
-import { useDispatch } from "react-redux";
-import { addItem } from "../redux/cart";
+import { useDispatch, useSelector } from "react-redux";
+import { addItem, removeItem } from "../redux/cart";
+import { RootState } from "../redux/store";
 
 interface WaiterDeckTileProps {
   id: string;
@@ -23,19 +24,15 @@ const WaiterDeckTile: FC<WaiterDeckTileProps> = ({
   calories,
   type,
 }) => {
-  const [count, setCount] = useState(0);
+  const { items } = useSelector((state: RootState) => state.cart);
   const dispatch = useDispatch();
 
   const handleAddItem = () => {
-    setCount(count + 1);
     dispatch(addItem({ item: { id, name, calories, price, type } }));
   };
 
   const handleRemoveItem = () => {
-    if (count > 0) {
-      setCount(count - 1);
-      dispatch(addItem({ item: { id, name, calories, price, type } }));
-    }
+    dispatch(removeItem({ itemId: id }));
   };
 
   return (
@@ -69,17 +66,25 @@ const WaiterDeckTile: FC<WaiterDeckTileProps> = ({
             color="primary"
             aria-label="Add"
             size="small"
-            disabled={count === 0 ? true : false}
+            onClick={handleRemoveItem}
+            disabled={
+              items[id] ? (items[id].quantity === 0 ? true : false) : true
+            }
           >
-            <RemoveIcon onClick={handleRemoveItem} />
+            <RemoveIcon />
           </Fab>
         </Grid>
         <Grid item>
-          <Chip label={count} />
+          <Chip label={items[id]?.quantity ?? 0} />
         </Grid>
         <Grid item>
-          <Fab color="primary" aria-label="Add" size="small">
-            <AddIcon onClick={handleAddItem} />
+          <Fab
+            color="primary"
+            aria-label="Add"
+            size="small"
+            onClick={handleAddItem}
+          >
+            <AddIcon />
           </Fab>
         </Grid>
       </Grid>

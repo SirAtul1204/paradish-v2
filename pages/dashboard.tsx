@@ -27,6 +27,11 @@ const Dashboard = () => {
       image: "/assets/waiter.png",
       onClick: () => router.push("/waiters-deck"),
     },
+    {
+      title: "Chef's Hub",
+      image: "/assets/chef.png",
+      onClick: () => router.push("/orders"),
+    },
   ];
 
   return (

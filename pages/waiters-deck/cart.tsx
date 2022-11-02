@@ -9,7 +9,7 @@ import Chip from "@mui/material/Chip";
 import AddIcon from "@mui/icons-material/Add";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../../redux/store";
-import { addItem, hydrateCart, removeItem } from "../../redux/cart";
+import { addItem, clearCart, hydrateCart, removeItem } from "../../redux/cart";
 import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
 import { openAlert } from "../../redux/alertReducer";
@@ -40,6 +40,7 @@ const Cart = () => {
   const { mutate, isLoading } = trpc.order.create.useMutation({
     onSuccess: (data) => {
       dispatch(openAlert({ message: data.message, type: "success" }));
+      dispatch(clearCart());
       router.push("/waiters-deck");
     },
     onError: (err) => {

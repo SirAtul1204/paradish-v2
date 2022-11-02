@@ -54,7 +54,7 @@ const Menu = () => {
           <Button
             variant="contained"
             color="warning"
-            onClick={() => router.push("/menu/edit")}
+            onClick={() => router.push("/menu/add")}
           >
             Add Menu Item
           </Button>

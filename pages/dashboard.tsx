@@ -32,6 +32,11 @@ const Dashboard = () => {
       image: "/assets/chef.png",
       onClick: () => router.push("/orders"),
     },
+    {
+      title: "Bills",
+      image: "/assets/bill.png",
+      onClick: () => router.push("/bills"),
+    },
   ];
 
   return (

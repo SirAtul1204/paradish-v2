@@ -96,4 +96,39 @@ export const orderRouter = t.router({
 
       return { message: "Order updated successfully" };
     }),
+  getCompleted: t.procedure.query(async ({ ctx }) => {
+    const payload = await verifyCookie(ctx);
+    const requestor = await getRequestor(payload);
+
+    const orders = await prisma.order.findMany({
+      where: {
+        AND: [
+          { restaurantId: requestor.restaurantId },
+          { status: OrderStatus.COMPLETED },
+          { paid: false },
+        ],
+      },
+    });
+
+    return orders;
+  }),
+  setToPaid: t.procedure
+    .input(z.object({ id: z.string() }))
+    .mutation(async ({ input, ctx }) => {
+      const payload = await verifyCookie(ctx);
+      const requestor = await getRequestor(payload);
+
+      const order = await prisma.order.update({
+        where: { id: input.id },
+        data: { status: OrderStatus.COMPLETED, paid: true },
+      });
+
+      if (!order)
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message: "Failed to update order",
+        });
+
+      return { message: "Order updated successfully" };
+    }),
 });

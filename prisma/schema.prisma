@@ -81,6 +81,7 @@ model Order {
   totalQuantity Float
   totalCalories Float
   restaurantId  String
+  paid          Boolean     @default(false)
   Restaurant    Restaurant  @relation(fields: [restaurantId], references: [id], onDelete: Cascade)
 }
 
